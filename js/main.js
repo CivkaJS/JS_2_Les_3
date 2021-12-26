@@ -10,13 +10,24 @@ const app = new Vue({
         filtered: [],
         imgCatalog: 'https://via.placeholder.com/200x150',
         userSearch: '',
-        showBasket: false
+        showBasket: false,
+        showCard: true
     },
     methods: {
         filter(value) {
             const regexp = new RegExp(value, 'i');
             this.filtered = this.products.filter(product => regexp.test(product.product_name));
             console.log(this.filtered);
+
+            this.products.map(object => {
+                const edit = this.filtered.find(items => (object.id_product == items.id_product));
+                if (edit == undefined) {
+                    object.show = false;
+                }
+                else {
+                    edit.show = true;
+                }
+            });
         },
         getJson(url) {
             return fetch(url)
@@ -62,12 +73,14 @@ const app = new Vue({
         this.getJson(`${API + this.catalogUrl}`)
             .then(data => {
                 for (let el of data) {
+                    el.show = true;
                     this.products.push(el);
                 }
             });
         this.getJson(`getProducts.json`)
             .then(data => {
                 for (let el of data) {
+                    el.show = true;
                     this.products.push(el);
                 }
             })
